@@ -1,4 +1,3 @@
-
 def admin_mode(p):
     req=5
     while req!=0:
@@ -51,6 +50,8 @@ def admin_mode(p):
                 print("Deleted {}".format(product))
             except:
                 print("Product does not exist")
+        else:
+            print("Please enter a number 0-4")
 
 def customer(p, n):
     print("Welcome {}!".format(name))
@@ -71,8 +72,14 @@ def customer(p, n):
             if product in p.keys():
                 try:
                     num = int(input("Please enter the number of {} you wish to purchase    ".format(product)))
-                    cart[product]=num
-                    print("Added {} {} to your cart".format(num, product))
+                    if(num>=1):
+                        if product in cart.keys():
+                            cart[product] = cart[product] + num
+                        else:
+                            cart[product]=num
+                        print("Added {} {} to your cart".format(num, product))
+                    else:
+                        print("Please enter a valid number")
                 except:
                     print("Please enter a valid number")
             else:
@@ -80,11 +87,12 @@ def customer(p, n):
         elif req == 2:
             print("\t\t{}'s shopping cart".format(n))
             print("\nProduct\tQuantity\tCost\n")
-            total=0
+            total=0.0
             for product, num in cart.items():
-                total = total + p[product]*num
-                print("{}\t{}\t{}\t".format(product, num, p[product]*num))
-            print("\nTotal: {}\n".format(total))
+                c = float(float(p[product]) * int(num))
+                total = float(total) + c
+                print("{}\t{}\t{}\t".format(product, num, format(c, '.2f')))
+            print("\nTotal: {}\n".format(format(total, '.2f')))
             print("Thank you for shopping with us!")
         elif req == 3:
             product = input("Enter product name    ")
@@ -95,11 +103,13 @@ def customer(p, n):
                         cart[product] = cart[product] - num
                         if(cart[product] == 0):
                             del cart[product]
+                        print("Removed {} {} from your cart".format(num, product))
                     else:
                         print("You cannot remove more items than you currently have")
                 except:
                     print("Please enter a valid number")
-
+        else:
+            print("Please enter a number 0-3")
 name=""
 products={}
 while name!="quit":
