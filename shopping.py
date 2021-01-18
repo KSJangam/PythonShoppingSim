@@ -1,3 +1,16 @@
+import csv
+def save(p):
+    with open("products.csv", mode="w", newline="") as f:
+        writer=csv.writer(f, delimiter=",")
+        for product, price in p.items:
+            writer.writerow([product, price])
+
+def load(p):
+    with open("products.csv", mode="r") as f:
+        reader = csv.reader(f, delimiter=",")
+        for row in reader:
+            p[row[0]]=int(p[row[1]])
+
 def admin_mode(p):
     req=5
     while req!=0:
@@ -5,12 +18,13 @@ def admin_mode(p):
         print("View products.......2")
         print("Edit product price.......3")
         print("Remove a product.......4")
+        print("Save changes.......5")
         print("Quit.......0")
         try:
             req=int(input("Enter a number  "))
         except:
             print("Please enter a number")
-            req=5
+            req=6
         if req == 1:
             product = input("Enter product name    ")
             if product in p.keys():
@@ -50,6 +64,8 @@ def admin_mode(p):
                 print("Deleted {}".format(product))
             except:
                 print("Product does not exist")
+        elif req == 5:
+            save(p)
         else:
             print("Please enter a number 0-4")
 
@@ -70,6 +86,7 @@ def customer(p, n):
         if req == 1:
             product = input("Enter product name    ")
             if product in p.keys():
+                print("{} costs ${} per unit".format(product, p[product]))
                 try:
                     num = int(input("Please enter the number of {} you wish to purchase    ".format(product)))
                     if(num>=1):
@@ -114,6 +131,7 @@ name=""
 products={}
 while name!="quit":
     name = input("Enter your name\n")
+    load(products)
     if name == "admin":
         admin_mode(products)
     else:
