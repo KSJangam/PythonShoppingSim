@@ -1,15 +1,19 @@
 import csv
+import os
 def save(p):
+    if os.path.exists("products.csv"):
+        os.remove("products.csv")
     with open("products.csv", mode="w", newline="") as f:
         writer=csv.writer(f, delimiter=",")
-        for product, price in p.items:
+        for product, price in p.items():
             writer.writerow([product, price])
 
 def load(p):
-    with open("products.csv", mode="r") as f:
-        reader = csv.reader(f, delimiter=",")
-        for row in reader:
-            p[row[0]]=int(p[row[1]])
+    if os.path.exists("products.csv"):
+        with open("products.csv", mode="r") as f:
+            reader = csv.reader(f, delimiter=",")
+            for row in reader:
+                p[row[0]]=format(float(row[1]),'.2f')
 
 def admin_mode(p):
     req=5
