@@ -14,7 +14,44 @@ def load(p):
             reader = csv.reader(f, delimiter=",")
             for row in reader:
                 p[row[0]]=format(float(row[1]),'.2f')
-
+def add_product(p):
+    product = input("Enter product name    ")
+    if product in p.keys():
+        print("Product already exists")
+    else:
+        try:
+            price = float(input("Enter the per unit price for {}   ".format(product)))
+            if price>=0:
+                p[product]=format(price, '.2f')
+                print("Added {} with unit price ${}.".format(product, p[product]))
+            else:
+                print("Please enter a valid price")
+            return p
+        except:
+            print("Please enter a valid price")
+def edit_product(p):
+    product = input("Enter product name    ")
+    if product in p.keys():
+        try:
+            price = float(input("Enter the per unit price for {}   ".format(product)))
+            if price>=0:
+                p[product]=format(price, '.2f')
+                print("Changed the unit price of {} to ${}.".format(product, p[product]))
+            else:
+                print("Please enter a valid price")
+        except:
+            print("Please enter a valid price")
+    else:
+        print("Product does not exist")
+    return p
+def remove_product(p):
+    product = input("Enter product name    ")
+    try:
+        del p[product]
+        print("Deleted {}".format(product))
+    except:
+        print("Product does not exist")
+    return p
 def admin_mode(p):
     req=5
     while req!=0:
@@ -30,49 +67,60 @@ def admin_mode(p):
             print("Please enter a number")
             req=6
         if req == 1:
-            product = input("Enter product name    ")
-            if product in p.keys():
-                print("Product already exists")
-            else:
-                try:
-                    price = float(input("Enter the per unit price for {}   ".format(product)))
-                    if price>=0:
-                        p[product]=format(price, '.2f')
-                        print("Added {} with unit price ${}.".format(product, p[product]))
-                    else:
-                        print("Please enter a valid price")
-                except:
-                    print("Please enter a valid price")
+            p=add_product(p)
         elif req == 2:
             print("Product\t\tPrice\n")
             for product, price in p.items():
                 print("{}\t\t${}".format(product, price))
         elif req == 3:
-            product = input("Enter product name    ")
-            if product in p.keys():
-                try:
-                    price = float(input("Enter the per unit price for {}   ".format(product)))
-                    if price>=0:
-                        p[product]=format(price, '.2f')
-                        print("Changed the unit price of {} to ${}.".format(product, p[product]))
-                    else:
-                        print("Please enter a valid price")
-                except:
-                    print("Please enter a valid price")
-            else:
-                print("Product does not exist")
+            p=edit_product(p)
         elif req == 4:
-            product = input("Enter product name    ")
-            try:
-                del p[product]
-                print("Deleted {}".format(product))
-            except:
-                print("Product does not exist")
+            p=remove_product(p)
         elif req == 5:
             save(p)
         else:
             print("Please enter a number 0-4")
-
+def add_to_cart(p, cart):
+    product = input("Enter product name    ")
+    if product in p.keys():
+        print("{} costs ${} per unit".format(product, p[product]))
+        try:
+            num = int(input("Please enter the number of {} you wish to purchase    ".format(product)))
+            if(num>=1):
+                if product in cart.keys():
+                    cart[product] = cart[product] + num
+                else:
+                    cart[product]=num
+                    print("Added {} {} to your cart".format(num, product))
+            else:
+                print("Please enter a valid number")
+        except:
+            print("Please enter a valid number")
+    else:
+        print("{} not sold".format(product))
+    return cart
+def print_cart(p, cart):
+    total=0.0
+    for product, num in cart.items():
+        c = float(float(p[product]) * int(num))
+        total = float(total) + c
+        print("{}\t{}\t{}\t".format(product, num, format(c, '.2f')))
+        print("\nTotal: {}\n".format(format(total, '.2f')))
+        print("Thank you for shopping with us!")
+def remove_from_cart(cart):
+    product = input("Enter product name    ")
+    if product in cart.keys():
+        try:
+            num = int(input("Please enter the number of {} you wish to remove from your cart    ".format(product)))
+            if(cart[product] >= num):
+                cart[product] = cart[product] - num
+                if(cart[product] == 0):
+                    del cart[product]
+                    print("Removed {} {} from your cart".format(num, product))
+                else:
+                    print("You cannot remove more items than you currently have")
+        except:
+            print("Please enter a valid number")
 def customer(p, n):
     print("Welcome {}!".format(name))
     cart={}
@@ -88,47 +136,13 @@ def customer(p, n):
             print("Please enter a number")
             req=4
         if req == 1:
-            product = input("Enter product name    ")
-            if product in p.keys():
-                print("{} costs ${} per unit".format(product, p[product]))
-                try:
-                    num = int(input("Please enter the number of {} you wish to purchase    ".format(product)))
-                    if(num>=1):
-                        if product in cart.keys():
-                            cart[product] = cart[product] + num
-                        else:
-                            cart[product]=num
-                        print("Added {} {} to your cart".format(num, product))
-                    else:
-                        print("Please enter a valid number")
-                except:
-                    print("Please enter a valid number")
-            else:
-                print("{} not sold".format(product))
+            cart=add_to_cart(p,cart)
         elif req == 2:
             print("\t\t{}'s shopping cart".format(n))
             print("\nProduct\tQuantity\tCost\n")
-            total=0.0
-            for product, num in cart.items():
-                c = float(float(p[product]) * int(num))
-                total = float(total) + c
-                print("{}\t{}\t{}\t".format(product, num, format(c, '.2f')))
-            print("\nTotal: {}\n".format(format(total, '.2f')))
-            print("Thank you for shopping with us!")
+            print_cart(p, cart)
         elif req == 3:
-            product = input("Enter product name    ")
-            if product in cart.keys():
-                try:
-                    num = int(input("Please enter the number of {} you wish to remove from your cart    ".format(product)))
-                    if(cart[product] >= num):
-                        cart[product] = cart[product] - num
-                        if(cart[product] == 0):
-                            del cart[product]
-                        print("Removed {} {} from your cart".format(num, product))
-                    else:
-                        print("You cannot remove more items than you currently have")
-                except:
-                    print("Please enter a valid number")
+            remove_from_cart(cart)
         else:
             print("Please enter a number 0-3")
 name=""
